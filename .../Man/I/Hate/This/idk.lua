@@ -247,6 +247,178 @@ fastdamageplayerswitch:Set(false)
 
 Main:AddLabel("-------------------------------------------------------------------------------------------------")
 
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+local hrp = player.Character and player.Character:WaitForChild("HumanoidRootPart")
+
+local function tweenTo(destination)
+	if not hrp then return end
+	local distance = (hrp.Position - destination).Magnitude
+	local tweenInfo = TweenInfo.new(distance / 100, Enum.EasingStyle.Linear)
+	local tween = TweenService:Create(hrp, tweenInfo, {CFrame = CFrame.new(destination)})
+	tween:Play()
+end
+
+Teleport:AddLabel("🌊 First Sea")
+
+Teleport:AddSwitch("Starter Island", function(state)
+	if state then
+		tweenTo(Vector3.new(0, 10, 0))
+	end
+end)
+
+Teleport:AddSwitch("Jungle", function(state)
+	if state then
+		tweenTo(Vector3.new(-1610, 10, 150))
+	end
+end)
+
+Teleport:AddSwitch("Pirate Village", function(state)
+	if state then
+		tweenTo(Vector3.new(-1100, 10, 3900))
+	end
+end)
+
+Teleport:AddLabel("🌊 Second Sea")
+
+Teleport:AddSwitch("Kingdom of Rose", function(state)
+	if state then
+		tweenTo(Vector3.new(-394, 10, 1187))
+	end
+end)
+
+Teleport:AddSwitch("Green Zone", function(state)
+	if state then
+		tweenTo(Vector3.new(-2250, 10, -200))
+	end
+end)
+
+Teleport:AddLabel("🌊 Third Sea")
+
+Teleport:AddSwitch("Castle on the Sea", function(state)
+	if state then
+		tweenTo(Vector3.new(-5500, 10, -5300))
+	end
+end)
+
+Teleport:AddSwitch("Haunted Castle", function(state)
+	if state then
+		tweenTo(Vector3.new(-9500, 10, -7200))
+	end
+end)
+
+ESP:AddLabel("ESP Toggles")
+
+-- Create ESP label function
+local function createESP(part, labelName, color)
+	if not part:FindFirstChild("ESP_" .. labelName) then
+		local bill = Instance.new("BillboardGui", part)
+		bill.Name = "ESP_" .. labelName
+		bill.Size = UDim2.new(0, 100, 0, 40)
+		bill.AlwaysOnTop = true
+		bill.Adornee = part
+
+		local text = Instance.new("TextLabel", bill)
+		text.Size = UDim2.new(1, 0, 1, 0)
+		text.Text = labelName
+		text.TextColor3 = color
+		text.BackgroundTransparency = 1
+		text.TextScaled = true
+	end
+end
+
+-- Clear ESP labels
+local function clearESP(labelName)
+	for _, v in pairs(workspace:GetDescendants()) do
+		if v:IsA("BasePart") and v:FindFirstChild("ESP_" .. labelName) then
+			v:FindFirstChild("ESP_" .. labelName):Destroy()
+		end
+	end
+end
+
+-- ESP Update Functions
+local function updateIslandESP(state)
+	if state then
+		for _, v in pairs(workspace:GetChildren()) do
+			if v:IsA("Model") and v:FindFirstChild("SpawnPoint") then
+				createESP(v.SpawnPoint, "Island", Color3.fromRGB(0, 200, 255))
+			end
+		end
+	else
+		clearESP("Island")
+	end
+end
+
+local function updateFruitESP(state)
+	if state then
+		for _, v in pairs(workspace:GetDescendants()) do
+			if v:IsA("Tool") and v:FindFirstChild("Handle") then
+				createESP(v.Handle, "Fruit", Color3.fromRGB(255, 85, 0))
+			end
+		end
+	else
+		clearESP("Fruit")
+	end
+end
+
+local function updatePlayerESP(state)
+	if state then
+		for _, plr in pairs(game.Players:GetPlayers()) do
+			if plr ~= game.Players.LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+				createESP(plr.Character.HumanoidRootPart, "Player", Color3.fromRGB(255, 255, 255))
+			end
+		end
+	else
+		clearESP("Player")
+	end
+end
+
+local function updateBossESP(state)
+	if state then
+		for _, npc in pairs(workspace:GetDescendants()) do
+			if npc:IsA("Model") and npc:FindFirstChild("Humanoid") and npc:FindFirstChild("HumanoidRootPart") and string.find(npc.Name, "Boss") then
+				createESP(npc.HumanoidRootPart, "Boss", Color3.fromRGB(255, 0, 0))
+			end
+		end
+	else
+		clearESP("Boss")
+	end
+end
+
+local function updateNPCESP(state)
+	if state then
+		for _, npc in pairs(workspace:GetDescendants()) do
+			if npc:IsA("Model") and npc:FindFirstChild("Humanoid") and npc:FindFirstChild("HumanoidRootPart") and not string.find(npc.Name, "Boss") then
+				createESP(npc.HumanoidRootPart, "NPC", Color3.fromRGB(255, 255, 0))
+			end
+		end
+	else
+		clearESP("NPC")
+	end
+end
+
+local function updateChestESP(state)
+	if state then
+		for _, v in pairs(workspace:GetDescendants()) do
+			if v:IsA("MeshPart") and v.Name:lower():find("chest") then
+				createESP(v, "Chest", Color3.fromRGB(0, 255, 0))
+			end
+		end
+	else
+		clearESP("Chest")
+	end
+end
+
+-- ESP Switches
+ESP:AddSwitch("Islands ESP", function(state) updateIslandESP(state) end)
+ESP:AddSwitch("Fruits ESP", function(state) updateFruitESP(state) end)
+ESP:AddSwitch("Players ESP", function(state) updatePlayerESP(state) end)
+ESP:AddSwitch("Bosses ESP", function(state) updateBossESP(state) end)
+ESP:AddSwitch("NPCs ESP", function(state) updateNPCESP(state) end)
+ESP:AddSwitch("Chests ESP", function(state) updateChestESP(state) end)
+
 Farm:AddLabel("Auto Farm")
 
 local takequestswitch = Farm:AddSwitch("Auto Take Quest", function(bool)

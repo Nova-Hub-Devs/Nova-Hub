@@ -9,6 +9,7 @@ local window = library:AddWindow("Nova Hub | Blox Fruits | Paid Version | by ttv
 local Home = window:AddTab("Home")
 local Main = window:AddTab("Main")
 local Farm = window:AddTab("Farm")
+local ESP = window:AddTab("ESP+")
 local Teleport = window:AddTab("Teleport")
 local Misc = window:AddTab("Misc")
 local Stats = window:AddTab("Stats")
